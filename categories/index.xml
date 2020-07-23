@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on Aria&#39;s blog site</title>
-    <link>http://localhost:1313/categories/</link>
-    <description>Recent content in Categories on localhost:1313</description>
+    <link>https://zdw1.cn/categories/</link>
+    <description>Recent content in Categories on zdw1.cn</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     
-    <atom:link href="http://localhost:1313/categories/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="https://zdw1.cn/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
   </channel>
