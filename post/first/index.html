@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+
+  <meta name="generator" content="Hugo 0.74.2" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="服务端通过请求IP获取对应地址"><meta property="og:title" content="Laravel通过ip获取地址位置" />
+<meta property="og:description" content="服务端通过请求IP获取对应地址" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://localhost:1313/post/first/" />
+<meta property="article:published_time" content="2020-07-23T23:22:26+08:00" />
+<meta property="article:modified_time" content="2020-07-23T23:22:26+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Laravel通过ip获取地址位置"/>
+<meta name="twitter:description" content="服务端通过请求IP获取对应地址"/>
+
+  <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313css/normalize.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313css/main.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="http://localhost:1313css/all.css" />
+<title>Laravel通过ip获取地址位置 | Aria&#39;s blog site</title></head>
+<body><header>
+
+  <div id="titletext"><h2 id="title"><a href="http://localhost:1313">Aria&#39;s blog site</a></h2></div>
+  <div id="title-description"><div id=social>
+    <nav>
+      <ul></ul>
+    </nav>
+  </div>
+  </div>
+  <div id="mainmenu">
+    <nav>
+      <ul>
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+<main><div class="post">
+<div class="author">
+
+</div>
+<div class="post-header">
+
+<div class="meta">
+
+<div class="date">
+<span class="day">23</span>
+<span class="rest">七月 2020</span>
+</div>
+
+</div>
+
+<div class="matter">
+<h1 class="title">Laravel通过ip获取地址位置</h1>
+</div>
+</div>
+<div class="markdown">
+<p>使用 getip2 扩展包开发</p>
+<ul>
+<li>
+<p>getip2仓库地址：http://packagist.p2hp.com/packages/geoip2/geoip2</p>
+</li>
+<li>
+<p>getip2官网：https://dev.maxmind.com/geoip/geoip2/geolite2</p>
+</li>
+</ul>
+<p>需要下载一份 getip2 官网下载IP地址库</p>
+<p><img src="http://cos.haxibiao.com/images/5f165280baf0b.png" alt="5f165280baf0b.png (900×397)"></p>
+<p>将其保存到 public目录下</p>
+<p><img src="http://cos.haxibiao.com/images/5f1652da4f4ff.png" alt="5f1652da4f4ff.png (482×654)"></p>
+<p>Code Example:</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+
+<span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App\Http\Controllers</span>;
+
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">MaxMind\Db\Reader</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">IndexController</span> <span style="color:#66d9ef">extends</span> <span style="color:#a6e22e">Controller</span>
+{
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">index</span>()
+    {
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">view</span>(<span style="color:#e6db74">&#39;index&#39;</span>);
+    }
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">getIP</span>()
+    {
+        $reader <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Reader</span>(<span style="color:#a6e22e">public_path</span>(<span style="color:#e6db74">&#39;lib/GeoLite2-City.mmdb&#39;</span>));
+        $info   <span style="color:#f92672">=</span> $reader<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">get</span>(<span style="color:#e6db74">&#39;118.254.218.252&#39;</span>);
+        <span style="color:#a6e22e">dd</span>($info);
+    }
+}
+</code></pre></div><p>结果：</p>
+<p><img src="http://cos.haxibiao.com/images/5f1655bdb0d5e.png" alt="5f1655bdb0d5e.png (394×490)"></p>
+
+</div>
+<div class="tags">
+
+
+
+
+
+
+
+
+
+</div></div>
+
+</main><footer>
+
+
+
+    
+
+</footer>
+</body>
+</html>

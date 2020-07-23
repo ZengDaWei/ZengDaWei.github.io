@@ -2,28 +2,25 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Aria&#39;s blog site</title>
-    <link>http://example.org/post/</link>
-    <description>Recent content in Posts on Aria&#39;s blog site</description>
+    <link>http://localhost:1313/post/</link>
+    <description>Recent content in Posts on localhost:1313</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 23 Jul 2020 23:22:26 +0800</lastBuildDate>
     
-	<atom:link href="http://example.org/post/index.xml" rel="self" type="application/rss+xml" />
-    
+    <atom:link href="http://localhost:1313/post/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Laravel通过ip获取地址位置</title>
-      <link>http://example.org/post/first/</link>
+      <link>http://localhost:1313/post/first/</link>
       <pubDate>Thu, 23 Jul 2020 23:22:26 +0800</pubDate>
       
-      <guid>http://example.org/post/first/</guid>
-      <description>使用 getip2 扩展包开发
-  getip2仓库地址：http://packagist.p2hp.com/packages/geoip2/geoip2
-  getip2官网：https://dev.maxmind.com/geoip/geoip2/geolite2
-  需要下载一份 getip2 官网下载IP地址库
-将其保存到 public目录下
-Code Example:
-&amp;lt;?php namespace App\Http\Controllers; use MaxMind\Db\Reader; class IndexController extends Controller { public function index() { return view(&amp;#39;index&amp;#39;); } public function getIP() { $reader = new Reader(public_path(&amp;#39;lib/GeoLite2-City.mmdb&amp;#39;)); $info = $reader-&amp;gt;get(&amp;#39;118.254.218.252&amp;#39;); dd($info); } } 结果：</description>
+      <guid>http://localhost:1313/post/first/</guid>
+      <description>
+      
+      服务端通过请求IP获取对应地址
+      
+      </description>
     </item>
     
   </channel>
