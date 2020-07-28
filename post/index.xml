@@ -6,10 +6,22 @@
     <description>Recent content in Posts on zdw1.cn</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 23 Jul 2020 23:22:26 +0800</lastBuildDate>
+    <lastBuildDate>Tue, 28 Jul 2020 22:27:09 +0800</lastBuildDate>
     
     <atom:link href="https://zdw1.cn/post/index.xml" rel="self" type="application/rss+xml" />
     
+    <item>
+      <title>Study</title>
+      <link>https://zdw1.cn/post/study/</link>
+      <pubDate>Tue, 28 Jul 2020 22:27:09 +0800</pubDate>
+      
+      <guid>https://zdw1.cn/post/study/</guid>
+      <description>
+      
+      近期悟出的学习方法
+      
+      </description>
+    </item>
     <item>
       <title>Laravel通过ip获取地址位置</title>
       <link>https://zdw1.cn/post/first/</link>
