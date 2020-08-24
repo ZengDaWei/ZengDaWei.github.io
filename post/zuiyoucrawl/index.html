@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+
+  <meta name="generator" content="Hugo 0.74.2" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="description" content="最右爬虫"><meta property="og:title" content="最右推荐内容爬虫" />
+<meta property="og:description" content="最右爬虫" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://zdw1.cn/post/zuiyoucrawl/" />
+<meta property="article:published_time" content="2020-08-24T19:44:48+08:00" />
+<meta property="article:modified_time" content="2020-08-24T19:44:48+08:00" />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="最右推荐内容爬虫"/>
+<meta name="twitter:description" content="最右爬虫"/>
+
+  <link rel="stylesheet" type="text/css" media="screen" href="https://zdw1.cn/css/normalize.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="https://zdw1.cn/css/main.css" />
+  <link rel="stylesheet" type="text/css" media="screen" href="https://zdw1.cn/css/all.css" />
+<title>最右推荐内容爬虫 | Aria&#39;s blog site</title></head>
+<body><header>
+
+  <div id="titletext"><h2 id="title"><a href="https://zdw1.cn/">Aria&#39;s blog site</a></h2></div>
+  <div id="title-description"><div id=social>
+    <nav>
+      <ul></ul>
+    </nav>
+  </div>
+  </div>
+  <div id="mainmenu">
+    <nav>
+      <ul>
+        
+      </ul>
+    </nav>
+  </div>
+</header>
+<main><div class="post">
+<div class="author">
+
+</div>
+<div class="post-header">
+
+<div class="meta">
+
+<div class="date">
+<span class="day">24</span>
+<span class="rest">八月 2020</span>
+</div>
+
+</div>
+
+<div class="matter">
+<h1 class="title">最右推荐内容爬虫</h1>
+</div>
+</div>
+<div class="markdown">
+<h1 id="最右推荐自动爬虫">最右推荐自动爬虫</h1>
+<p>爬取内容：</p>
+<ul>
+<li>图文动态</li>
+<li>视频动态</li>
+<li>动态标签</li>
+<li>动态作者头像、昵称、性别、介绍</li>
+<li>动态神评论/最热评论</li>
+</ul>
+<p>代码：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php"><span style="color:#75715e">&lt;?php</span>
+
+<span style="color:#66d9ef">namespace</span> <span style="color:#a6e22e">App\Utils</span>;
+
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\Comment</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\Post</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\PostImage</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\PostTag</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\PostVideo</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\Tag</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\User</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\Utils\ImageUtils</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">App\Video</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">DOMDocument</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">DOMXPath</span>;
+<span style="color:#66d9ef">use</span> <span style="color:#a6e22e">GuzzleHttp\Client</span>;
+
+<span style="color:#66d9ef">class</span> <span style="color:#a6e22e">ZuiyouCrawlUtils</span>
+{
+
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">RECOMMEND_POST_BODY</span> <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;{&#34;filter&#34;:&#34;all&#34;,&#34;auto&#34;:0,&#34;tab&#34;:&#34;推荐&#34;,&#34;direction&#34;:&#34;up&#34;,&#34;c_types&#34;:[1,3,2,8,7,9,11],&#34;sdk_ver&#34;:{&#34;tt&#34;:&#34;1.9.6.3&#34;,&#34;tx&#34;:&#34;4.19.574&#34;,&#34;tt_aid&#34;:&#34;5004095&#34;,&#34;tx_aid&#34;:&#34;1107850635&#34;},&#34;ad_wakeup&#34;:1,&#34;h_ua&#34;:&#34;Mozilla\/5.0 (Linux; Android 7.1.2; MI 5X Build\/N2G47H; wv) AppleWebKit\/537.36 (KHTML, like Gecko) Version\/4.0 Chrome\/67.0.3396.87 Mobile Safari\/537.36&#34;,&#34;h_av&#34;:&#34;4.7.3&#34;,&#34;h_dt&#34;:0,&#34;h_os&#34;:25,&#34;h_app&#34;:&#34;zuiyou&#34;,&#34;h_model&#34;:&#34;MI 5X&#34;,&#34;h_did&#34;:&#34;866655030396869_02:00:00&#34;,&#34;h_nt&#34;:1,&#34;h_m&#34;:116456192,&#34;h_ch&#34;:&#34;xiaomi&#34;,&#34;h_ts&#34;:1543834422778,&#34;token&#34;:&#34;TfKbNCRqAec6tUN7wn3-JSGqoTcO1QytGiEBG2E1jQvCYBqj-TcCLYxVzUKtxgpDii503&#34;,&#34;android_id&#34;:&#34;57b9b8465c2e440b&#34;}&#39;</span>;
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">const</span> <span style="color:#66d9ef">RECOMMEND_POST_URI</span>  <span style="color:#f92672">=</span> <span style="color:#e6db74">&#39;http://api.izuiyou.com/index/recommend?sign=20e7fb7f430fef322605c108d5ac6f4f&#39;</span>;
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 解析最右首页推荐内容（包含视频和图文动态）
+</span><span style="color:#e6db74">     * 将 动态、作者、神评、标签存储
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">ParseRecommendData</span>()<span style="color:#f92672">:</span> <span style="color:#66d9ef">array</span>
+    {
+        $result <span style="color:#f92672">=</span> [];
+        <span style="color:#66d9ef">try</span> {
+            $client   <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">Client</span>();
+            $response <span style="color:#f92672">=</span> $client<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">post</span>(<span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">RECOMMEND_POST_URI</span>, [
+                <span style="color:#e6db74">&#39;headers&#39;</span> <span style="color:#f92672">=&gt;</span> [<span style="color:#e6db74">&#39;User-Agent&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;okhttp/3.11.0 Zuiyou/4.7.1&#39;</span>],
+                <span style="color:#e6db74">&#39;body&#39;</span>    <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">RECOMMEND_POST_BODY</span>,
+            ]);
+            $body     <span style="color:#f92672">=</span> <span style="color:#a6e22e">json_decode</span>((<span style="color:#a6e22e">string</span>) $response<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">getBody</span>(), <span style="color:#66d9ef">true</span>);
+            $dataList <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($body, <span style="color:#e6db74">&#39;data.list&#39;</span>);
+            <span style="color:#66d9ef">foreach</span> ($dataList <span style="color:#66d9ef">as</span> $item) {
+                <span style="color:#66d9ef">try</span> {
+                    $label <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($item, <span style="color:#e6db74">&#39;label&#39;</span>);
+                    <span style="color:#66d9ef">if</span> ($label <span style="color:#f92672">==</span> <span style="color:#e6db74">&#39;广告&#39;</span>) {
+                        <span style="color:#66d9ef">continue</span>;
+                    }
+                    $title <span style="color:#f92672">=</span> $item[<span style="color:#e6db74">&#39;content&#39;</span>];
+                    $user  <span style="color:#f92672">=</span> <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">SaveUser</span>($item[<span style="color:#e6db74">&#39;member&#39;</span>]);
+                    $post  <span style="color:#f92672">=</span> <span style="color:#a6e22e">Post</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                        <span style="color:#e6db74">&#39;user_id&#39;</span> <span style="color:#f92672">=&gt;</span> $user<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+                        <span style="color:#e6db74">&#39;title&#39;</span>   <span style="color:#f92672">=&gt;</span> $title,
+                    ]);
+                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isset</span>($item[<span style="color:#e6db74">&#39;post_labels&#39;</span>])) {
+                        <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">SaveTag</span>($item[<span style="color:#e6db74">&#39;post_labels&#39;</span>], $post<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>);
+                    }
+                    <span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">SaveBestCommentFromShareLink</span>($item[<span style="color:#e6db74">&#39;id&#39;</span>], $post<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>);
+                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isset</span>($item[<span style="color:#e6db74">&#39;videos&#39;</span>])) {
+                        <span style="color:#66d9ef">foreach</span> ($item[<span style="color:#e6db74">&#39;videos&#39;</span>] <span style="color:#66d9ef">as</span> $video) {
+                            $image <span style="color:#f92672">=</span> <span style="color:#a6e22e">ImageUtils</span><span style="color:#f92672">::</span><span style="color:#a6e22e">UploadImage</span>(<span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">GetCoverURLFromZYVideo</span>($video[<span style="color:#e6db74">&#39;thumb&#39;</span>]), <span style="color:#e6db74">&#39;cover&#39;</span>, <span style="color:#e6db74">&#39;zuiyou_video_cover&#39;</span>);
+                            $video <span style="color:#f92672">=</span> <span style="color:#a6e22e">Video</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                                <span style="color:#e6db74">&#39;path&#39;</span>  <span style="color:#f92672">=&gt;</span> $video[<span style="color:#e6db74">&#39;url&#39;</span>],
+                                <span style="color:#e6db74">&#39;cover&#39;</span> <span style="color:#f92672">=&gt;</span> $image<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">url</span>,
+                            ]);
+                            <span style="color:#a6e22e">PostVideo</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                                <span style="color:#e6db74">&#39;post_id&#39;</span>  <span style="color:#f92672">=&gt;</span> $post<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+                                <span style="color:#e6db74">&#39;video_id&#39;</span> <span style="color:#f92672">=&gt;</span> $video<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+                            ]);
+                        }
+                    }
+                    <span style="color:#66d9ef">foreach</span> ($item[<span style="color:#e6db74">&#39;imgs&#39;</span>] <span style="color:#66d9ef">as</span> $img) {
+                        <span style="color:#66d9ef">if</span> ($img[<span style="color:#e6db74">&#39;video&#39;</span>] <span style="color:#f92672">!=</span> <span style="color:#ae81ff">1</span>) {
+                            $image <span style="color:#f92672">=</span> <span style="color:#a6e22e">ImageUtils</span><span style="color:#f92672">::</span><span style="color:#a6e22e">UploadImage</span>(<span style="color:#a6e22e">self</span><span style="color:#f92672">::</span><span style="color:#a6e22e">GetImageURLFromZYImage</span>($img[<span style="color:#e6db74">&#39;id&#39;</span>]), <span style="color:#e6db74">&#39;image&#39;</span>, <span style="color:#e6db74">&#39;zuiyou_image&#39;</span>);
+                            <span style="color:#a6e22e">PostImage</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                                <span style="color:#e6db74">&#39;post_id&#39;</span>  <span style="color:#f92672">=&gt;</span> $post<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+                                <span style="color:#e6db74">&#39;image_id&#39;</span> <span style="color:#f92672">=&gt;</span> $image<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+                            ]);
+                        }
+                    }
+                } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">\Throwable</span> $th) {
+                    <span style="color:#66d9ef">if</span> (<span style="color:#a6e22e">isset</span>($post)) {
+                        $post<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">forceDelete</span>();
+                    }
+                    <span style="color:#66d9ef">continue</span>;
+                }
+                $result[] <span style="color:#f92672">=</span> $post;
+            }
+            <span style="color:#66d9ef">return</span> $result;
+        } <span style="color:#66d9ef">catch</span> (<span style="color:#a6e22e">\Throwable</span> $th) {
+            <span style="color:#66d9ef">throw</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">\Exception</span>($th<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">getMessage</span>());
+        }
+    }
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 保存最右标签
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">SaveTag</span>(<span style="color:#66d9ef">array</span> $ZYtag, $postID)
+    {
+        <span style="color:#66d9ef">foreach</span> ($ZYtag <span style="color:#66d9ef">as</span> $tag) {
+            $tag <span style="color:#f92672">=</span> <span style="color:#a6e22e">Tag</span><span style="color:#f92672">::</span><span style="color:#a6e22e">firstOrCreate</span>([
+                <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> $tag[<span style="color:#e6db74">&#39;label_name&#39;</span>],
+            ]);
+            <span style="color:#a6e22e">PostTag</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                <span style="color:#e6db74">&#39;post_id&#39;</span> <span style="color:#f92672">=&gt;</span> $postID,
+                <span style="color:#e6db74">&#39;tag_id&#39;</span>  <span style="color:#f92672">=&gt;</span> $tag<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">id</span>,
+            ]);
+        }
+    }
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 保存最右用户数据
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">SaveUser</span>(<span style="color:#66d9ef">array</span> $ZYuser)
+    {
+        $name         <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($ZYuser, <span style="color:#e6db74">&#39;name&#39;</span>);
+        $introduction <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($ZYuser, <span style="color:#e6db74">&#39;sign&#39;</span>);
+        $gender       <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($ZYuser, <span style="color:#e6db74">&#39;gender&#39;</span>);
+        <span style="color:#66d9ef">if</span> ($gender <span style="color:#f92672">==</span> <span style="color:#ae81ff">1</span>) {
+            $gender <span style="color:#f92672">=</span> <span style="color:#ae81ff">0</span>;
+        } <span style="color:#66d9ef">else</span> <span style="color:#66d9ef">if</span> ($gender <span style="color:#f92672">==</span> <span style="color:#ae81ff">2</span>) {
+            $gender <span style="color:#f92672">=</span> <span style="color:#ae81ff">1</span>;
+        }
+        $avatar <span style="color:#f92672">=</span> <span style="color:#a6e22e">data_get</span>($ZYuser, <span style="color:#e6db74">&#39;avatar_urls&#39;</span>)[<span style="color:#e6db74">&#39;origin&#39;</span>][<span style="color:#e6db74">&#39;urls&#39;</span>][<span style="color:#ae81ff">0</span>];
+        $image  <span style="color:#f92672">=</span> <span style="color:#a6e22e">ImageUtils</span><span style="color:#f92672">::</span><span style="color:#a6e22e">UploadImage</span>($avatar, <span style="color:#e6db74">&#39;avatar&#39;</span>, <span style="color:#e6db74">&#39;zuiyou_avatar&#39;</span>);
+        $user   <span style="color:#f92672">=</span> <span style="color:#a6e22e">User</span><span style="color:#f92672">::</span><span style="color:#a6e22e">firstOrCreate</span>([
+            <span style="color:#e6db74">&#39;name&#39;</span> <span style="color:#f92672">=&gt;</span> $name,
+        ], [
+            <span style="color:#e6db74">&#39;name&#39;</span>   <span style="color:#f92672">=&gt;</span> $name,
+            <span style="color:#e6db74">&#39;avatar&#39;</span> <span style="color:#f92672">=&gt;</span> $image<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">url</span>,
+        ]);
+        $user<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">profile</span><span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">update</span>([
+            <span style="color:#e6db74">&#39;introduction&#39;</span> <span style="color:#f92672">=&gt;</span> $introduction,
+            <span style="color:#e6db74">&#39;gender&#39;</span>       <span style="color:#f92672">=&gt;</span> $gender,
+        ]);
+        <span style="color:#66d9ef">return</span> $user;
+    }
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 根据最右动态id 获取最右动态神评论或最热评论
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">SaveBestCommentFromShareLink</span>($pid, $postID)
+    {
+        $shareLink <span style="color:#f92672">=</span> <span style="color:#a6e22e">sprintf</span>(<span style="color:#e6db74">&#34;https://share.izuiyou.com/hybrid/share/post?pid=%s&amp;&#34;</span>, $pid);
+        $result    <span style="color:#f92672">=</span> <span style="color:#a6e22e">file_get_contents</span>($shareLink);
+        $dom       <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">DOMDocument</span>();
+        $dom<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">loadHTML</span>((<span style="color:#a6e22e">string</span>) $result);
+        $dom<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">normalize</span>();
+        $xpath  <span style="color:#f92672">=</span> <span style="color:#66d9ef">new</span> <span style="color:#a6e22e">DOMXPath</span>($dom);
+        $data   <span style="color:#f92672">=</span> $xpath<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">query</span>(<span style="color:#e6db74">&#39;//*[@id=&#34;app&#34;]/div/div[1]/div/div[3]/div[2]/div[2]/div&#39;</span>);
+        $result <span style="color:#f92672">=</span> <span style="color:#66d9ef">null</span>;
+        <span style="color:#66d9ef">foreach</span> ($data <span style="color:#66d9ef">as</span> $val) {
+            $item <span style="color:#f92672">=</span> $val<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">childNodes</span>;
+            <span style="color:#66d9ef">foreach</span> ($item <span style="color:#66d9ef">as</span> $v) {
+                $result <span style="color:#f92672">=</span> <span style="color:#a6e22e">trim</span>($v<span style="color:#f92672">-&gt;</span><span style="color:#a6e22e">textContent</span>);
+            }
+        }
+        <span style="color:#66d9ef">if</span> ($result) {
+            <span style="color:#a6e22e">Comment</span><span style="color:#f92672">::</span><span style="color:#a6e22e">create</span>([
+                <span style="color:#e6db74">&#39;content&#39;</span>          <span style="color:#f92672">=&gt;</span> $result,
+                <span style="color:#e6db74">&#39;user_id&#39;</span>          <span style="color:#f92672">=&gt;</span> <span style="color:#a6e22e">rand</span>(<span style="color:#ae81ff">5</span>, <span style="color:#ae81ff">2934</span>),
+                <span style="color:#e6db74">&#39;commentable_id&#39;</span>   <span style="color:#f92672">=&gt;</span> $postID,
+                <span style="color:#e6db74">&#39;commentable_type&#39;</span> <span style="color:#f92672">=&gt;</span> <span style="color:#e6db74">&#39;posts&#39;</span>,
+            ]);
+        }
+    }
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 通过最右视频id获取视频封面
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">GetCoverURLFromZYVideo</span>($ZYVideoID)
+    {
+        $ZYVideoID <span style="color:#f92672">=</span> (<span style="color:#a6e22e">string</span>) $ZYVideoID;
+        $temp      <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://tbfile.izuiyou.com/img/frame/id/%s?w=540&amp;xcdelogo=0&#34;</span>;
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sprintf</span>($temp, $ZYVideoID);
+    }
+
+    <span style="color:#e6db74">/**
+</span><span style="color:#e6db74">     * 通过最右图片id获取图片URL
+</span><span style="color:#e6db74">     */</span>
+    <span style="color:#66d9ef">public</span> <span style="color:#66d9ef">static</span> <span style="color:#66d9ef">function</span> <span style="color:#a6e22e">GetImageURLFromZYImage</span>($ZYImageID)
+    {
+        $ZYImageID <span style="color:#f92672">=</span> (<span style="color:#a6e22e">string</span>) $ZYImageID;
+        $temp      <span style="color:#f92672">=</span> <span style="color:#e6db74">&#34;http://tbfile.izuiyou.com/img/view/id/%s/sz/src&#34;</span>;
+        <span style="color:#66d9ef">return</span> <span style="color:#a6e22e">sprintf</span>($temp, $ZYImageID);
+    }
+}
+
+</code></pre></div><p>以上已经将最右分析出来的的请求签名、token 写死在请求 body 与 url 中，了解最右最新请求签名破解：<a href="https://bbs.pediy.com/thread-260417.htm">某右 sign-v2 算法分析</a></p>
+<p>调用：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-php" data-lang="php">public function zuiyou()
+    {
+        $count = 0;
+        while (true) {
+            $this-&gt;info(&#34;第{$count}次爬虫开始&#34;);
+            if ($count != 0) {
+                $this-&gt;info(&#39;爬虫冷却中&#39;);
+                sleep(60 + rand(1, 60));
+            }
+            $this-&gt;info(&#39;爬虫正式开始&#39;);
+            $posts = ZuiyouCrawlUtils::ParseRecommendData();
+            foreach ($posts as $post) {
+                if ($post) {
+                    $this-&gt;info(&#34;prase successful , post id = {$post-&gt;id}&#34;);
+                }
+            }
+            ++$count;
+        }
+    }
+</code></pre></div><p>每次将数据存储完成后，需要注意请求间隔时间，避免被封，所以随机 sleep2 分钟再继续爬</p>
+<p>以上代码开箱即用。</p>
+<p>结果：</p>
+<p><img src="https://image.zdw1.cn//20200824163045.png" alt=""></p>
+<p>一次采集 &lt;=10 条，不用人工操作，单窗口一天可采集 2k+数据。</p>
+<p>有了足够的基础数据，接下来的步骤是：</p>
+<ul>
+<li>80%动态具有 10+ 的评论，20 个以上的喜欢</li>
+<li>仿抖音动态推荐功能</li>
+<li>新动态 2 分钟内收到至少 2+评论，7+喜欢，手机弹窗通知</li>
+<li>新评论 2 分钟至少收到 4+喜欢</li>
+</ul>
+<p>有些操作可能会是机器人所为，但机器人从 UI 展示和行为数据不会让人认为是机器人，机器人在数据上与真人无异。</p>
+<p>每个机器人都有它自己的头像、昵称、性别、介绍，其行为和内容会根据性别控制。</p>
+<p>机器人数据举例：</p>
+<div class="highlight"><pre style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#e6db74">&#34;user&#34;</span><span style="color:#960050;background-color:#1e0010">:</span> {
+            <span style="color:#f92672">&#34;id&#34;</span>: <span style="color:#e6db74">&#34;742&#34;</span>,
+            <span style="color:#f92672">&#34;name&#34;</span>: <span style="color:#e6db74">&#34;咖啡和巧克力好像&#34;</span>,
+            <span style="color:#f92672">&#34;avatar&#34;</span>: <span style="color:#e6db74">&#34;https://cos-study.jinlinle.com/app/avatar/avatar-5f424d036ae115.46671540.jpg&#34;</span>
+          }
+</code></pre></div>
+</div>
+<div class="tags">
+
+
+
+
+
+
+
+
+
+</div></div>
+
+</main><footer>
+
+
+
+    
+
+</footer>
+</body>
+</html>
